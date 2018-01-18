@@ -1,5 +1,5 @@
 # American Institutions App
-A Shiny app that displays information about American institutions.
+A Shiny app that displays informations about American institutions.
 
 Author: Maud Boucherit
 Released on 2018-01-18
