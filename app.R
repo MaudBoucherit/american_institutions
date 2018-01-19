@@ -50,7 +50,8 @@ ui <- fluidPage(
       
       # Show a plot of the generated distribution
       mainPanel(
-        
+        h3("Proportion of students by ethnic group"),
+        plotOutput("barPlot")
       )
    )
 )
@@ -72,7 +73,23 @@ server <- function(input, output) {
                    selected=cities[1:2], multiple = TRUE)
   })
   
-  
+  output$barPlot <- renderPlot({
+    # Filter data
+    data_filt <- data %>% 
+      filter(CITY %in% input$cities, 
+             LOCALE %in% input$area,
+             COSTT4_A > input$fees[1], COSTT4_A < input$fees[2],
+             CONTROL %in% input$control)
+    
+    ggplot(data_filt, aes(x = INSTNM, y = pct, fill = color, order = color)) +
+      geom_bar(position = "fill", stat = "identity", color="black") +
+      scale_x_discrete("") +
+      scale_y_continuous("Proportion") +
+      scale_fill_manual("", labels = c("Asian", "Black", "Hispanic", "White"),
+                        values = c("sienna4", "darkorange3", "orange2", "gold1")) +
+      theme_light() + 
+      theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  })
 }
 
 # Run the application 
