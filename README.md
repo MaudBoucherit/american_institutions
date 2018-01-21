@@ -1,8 +1,7 @@
 # American Institutions App
 A Shiny app that displays information about American institutions.
 
-Maud Boucherit   
-Jan 2018   
+Maud Boucherit, Jan 2018   
 
 ## Overview
 
@@ -20,6 +19,4 @@ If Michael finds a school appealing, he can select it in the second section of t
 
 ## Description of the app
 
-The app shows the distribution (bar chart or density chart) of dataset factors like the ethnic diversity, the incomes distribution or the proportion of undergraduates receiving a federal student loan. Users can choose which variables they want to see. From a selection panel on the left side, users can filter institutions by state, by local area (i.e. only show schools from large cities), by control of the institution (i.e. if the school is public or private), and finally by the annual cost of attendance. A different drop-down menu will allow users to focus on one institution. The app will display new statistics about that school, along with a progression plot showing the average earning of former students from 6 to 10 years after graduation. The average earnings can be changed from mean to median by checking a box.   
-
-![](sketch.png)
+You can find a detailed documentation of this app [here](DOCUMENTATION.md).
