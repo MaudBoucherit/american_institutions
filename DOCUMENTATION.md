@@ -36,6 +36,14 @@ For this plot, you can choose which variables to display:
 - the proportion of married students,
 - the proportion of dependent students.
 
+## The Zoom panel
+
+You can change panel by clicking on the Zoom window at the top.   
+
+![](figures/progPlot.png)
+
+This panel displays a progression plot of the average earnings of former students by the number of years after entry. You need to select one school from your previous selection.
+
 ## The table panel
 
 You can change panel by clicking on the table window at the top.   

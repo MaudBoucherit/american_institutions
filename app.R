@@ -18,7 +18,6 @@ states <- read_csv("data/states.csv")
 named_states <- states$id
 names(named_states) <- states$names
 
-sum(is.null(data$STABBR))
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -39,9 +38,9 @@ ui <- fluidPage(
         
         sliderInput("fees", "Annual cost of attendance:",
                     min = 0, max = 100000,
-                    value = c(min(data$COSTT4_A, na.rm = TRUE), 30000), pre = "$"),
+                    value = c(min(data$Cost_att, na.rm = TRUE), 30000), pre = "$"),
         
-        checkboxGroupInput("control", "Select school status:", unique(data$CONTROL), 
+        checkboxGroupInput("control", "Select school status:", unique(data$Control), 
                            selected = c("Public"), inline = TRUE),
         
         # Selection of cities inside selected states
@@ -75,9 +74,15 @@ ui <- fluidPage(
             h3("Proportion of students for each school"),
             plotOutput("distPlot")
           ),
+          tabPanel("Zoom",
+                   # Selection of cities inside selected states
+                   uiOutput("schoolControl"),
+                   
+                   h3("Average earnings of former students by year after entry"),
+                   plotOutput("progPlot")
+          ),
           tabPanel("Table",
                    dataTableOutput("table"))
-          
         )
       )
    )
@@ -89,12 +94,13 @@ server <- function(input, output) {
   ## Build an interactive city widget
   output$cityControls <- renderUI({
     cities <- data %>% 
-      filter(STABBR %in% input$states,
-             LOCALE %in% input$area,
-             COSTT4_A > input$fees[1], COSTT4_A < input$fees[2],
-             CONTROL %in% input$control) %>%  
-      pull(CITY) %>% 
-      unique()
+      filter(State %in% input$states,
+             Locale %in% input$area,
+             Cost_att > input$fees[1], Cost_att < input$fees[2],
+             Control %in% input$control) %>%  
+      pull(City) %>% 
+      unique() %>% 
+      sort()
     
     
     selectizeInput("cities", label="Select cities:", choices=cities,
@@ -104,11 +110,11 @@ server <- function(input, output) {
   ## Filter the data for all the graphs
   data_filt <- eventReactive(input$go, { 
     data %>% 
-      filter(STABBR %in% input$states,
-             CITY %in% input$cities, 
-             LOCALE %in% input$area,
-             COSTT4_A > input$fees[1], COSTT4_A < input$fees[2],
-             CONTROL %in% input$control)
+      filter(State %in% input$states,
+             City %in% input$cities, 
+             Locale %in% input$area,
+             Cost_att > input$fees[1], Cost_att < input$fees[2],
+             Control %in% input$control)
   })
   
   
@@ -120,7 +126,7 @@ server <- function(input, output) {
     if (input$bar_var == "ethnic") {
       data_filt <- gather(data_filt(), "color", "pct", pct_white, pct_black, pct_hispanic, pct_asian)
       
-      ggplot(data_filt, aes(x = INSTNM, y = pct, fill = color, order = color)) +
+      ggplot(data_filt, aes(x = Name, y = pct, fill = color, order = color)) +
         geom_bar(position = "fill", stat = "identity", color="black") +
         scale_x_discrete("") +
         scale_y_continuous("Proportion") +
@@ -131,9 +137,9 @@ server <- function(input, output) {
     } 
     # Bar plot for the family income
     else {
-      data_filt <- gather(data_filt(), "income", "prop", INC_PCT_LO, INC_PCT_M1, INC_PCT_M2, INC_PCT_H1, INC_PCT_H2)
+      data_filt <- gather(data_filt(), "income", "prop", Low_income, Mid1_income, Mid2_income, High1_income, High2_income)
       
-      ggplot(data_filt, aes(x = INSTNM, y = prop, fill = income, order = income)) +
+      ggplot(data_filt, aes(x = Name, y = prop, fill = income, order = income)) +
         geom_bar(position = "fill", stat = "identity", color="black") +
         scale_x_discrete("") +
         scale_y_continuous("Proportion") +
@@ -154,15 +160,49 @@ server <- function(input, output) {
     p <- ggplot(data_filt()) 
     
     for (var in input$prop_var) {
-      p <- p + geom_point(aes_string(x = var, y = 'INSTNM', colour = shQuote(var)), 
+      p <- p + geom_point(aes_string(x = var, y = 'Name', colour = shQuote(var)), 
                           size = 3) 
     }
     
-    p + facet_grid(STABBR ~ ., scales = "free", space = "free") +
+    p + facet_grid(State ~ ., scales = "free", space = "free") +
       scale_x_continuous("Proportion", limits = c(0,1)) +
       scale_y_discrete("") +
       scale_colour_manual(name = "", values = varColors) +
       theme_bw()
+  })
+  
+  
+  ### Zoom Panel ###
+  
+  ## Build an interactive city widget
+  output$schoolControl <- renderUI({
+    schools <- data_filt() %>% 
+      pull(Name) %>% 
+      unique() %>% 
+      sort()
+    
+    selectInput("school", label="Select a school:", choices=schools)
+  })
+  
+  ## Progression plot
+  output$progPlot <- renderPlot({
+    data_filt <- data_filt() %>% 
+      filter(Name == input$school) %>% 
+      gather("year", "earnings", Mean_earning_6, Mean_earning_7, 
+             Mean_earning_8, Mean_earning_9, Mean_earning_10) %>% 
+      mutate(year = str_replace(year, "Mean_earning_6", "6"),
+             year = str_replace(year, "Mean_earning_7", "7"),
+             year = str_replace(year, "Mean_earning_8", "8"),
+             year = str_replace(year, "Mean_earning_9", "9"),
+             year = str_replace(year, "Mean_earning_10", "10"),
+             year = as.numeric(year)) 
+    
+    ggplot(data_filt, aes(x = year, y = earnings)) + 
+      geom_point(size = 3) +
+      geom_line() +
+      scale_x_continuous("Number of years after entry") +
+      scale_y_continuous("Average earnings (USD)") +
+      theme_light()
   })
   
   ## Render the table
