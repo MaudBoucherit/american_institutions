@@ -10,7 +10,7 @@ When applying for post-secondary education, one first needs to select some schoo
 
 ### Data
 
-I am using the [scorecard](data/scorecard.txt) dataset.   
+I am using the [scorecard](data/scorecard.csv) dataset.   
 More information about this dataset is available [here](data/README.md).
 
 ## Usage scenario & tasks
