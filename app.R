@@ -74,7 +74,10 @@ ui <- fluidPage(
             
             h3("Proportion of students for each school"),
             plotOutput("distPlot")
-          )
+          ),
+          tabPanel("Table",
+                   dataTableOutput("table"))
+          
         )
       )
    )
@@ -161,6 +164,9 @@ server <- function(input, output) {
       scale_colour_manual(name = "", values = varColors) +
       theme_bw()
   })
+  
+  ## Render the table
+  output$table <- renderDataTable(data_filt())
 }
 
 # Run the application 
