@@ -81,6 +81,10 @@ ui <- fluidPage(
       mainPanel(
         tabsetPanel(
           tabPanel("General information", 
+            br(), 
+            tags$i("The following plots are readable with 30 schools or less."),
+            br(),
+            
             # Display the bar plot
             radioButtons("bar_var", "", c("by ethnic group" = "ethnic", "by family income" = "income"), inline = TRUE),
             
@@ -149,32 +153,32 @@ server <- function(input, output) {
   
   ## Display the Bar plots
   output$barPlot <- renderPlot({
-    # Bar plot for the ethnic group
+    # Treatment for the ethnic bar plot
     if (input$bar_var == "ethnic") {
+      # Gather the ethnic data in two columns
       data_filt <- gather(data_filt(), "color", "pct", pct_white, pct_black, pct_hispanic, pct_asian)
       
-      ggplot(data_filt, aes(x = Name, y = pct, fill = color, order = color)) +
-        geom_bar(position = "fill", stat = "identity", color="black") +
-        scale_x_discrete("") +
-        scale_y_continuous("Proportion") +
+      # Initialise the plot and the legend for the ethnic data
+      p <- ggplot(data_filt, aes(x = Name, y = pct, fill = color, order = color)) +
         scale_fill_manual("Ethnic group   ", labels = c("Asian", "Black", "Hispanic", "White"),
-                          values = c("sienna4", "darkorange3", "orange2", "gold1")) +
-        theme_light() + 
-        theme(axis.text.x = element_text(angle = 90, hjust = 1))
+                          values = c("sienna4", "darkorange3", "orange2", "gold1"))
     } 
-    # Bar plot for the family income
+    # Treatment for the income bar plot
     else {
+      # Gather the income data in two columns
       data_filt <- gather(data_filt(), "income", "prop", Low_income, Mid1_income, Mid2_income, High1_income, High2_income)
       
-      ggplot(data_filt, aes(x = Name, y = prop, fill = income, order = income)) +
-        geom_bar(position = "fill", stat = "identity", color="black") +
-        scale_x_discrete("") +
-        scale_y_continuous("Proportion") +
+      # Initialise the plot and the legend for the income data
+      p <- ggplot(data_filt, aes(x = Name, y = prop, fill = income, order = income)) +
         scale_fill_manual("Income (USD)", labels = c("110k and +", "75k to 110k", "48k to 75k", "30k to 48k", "0k to 30k"),
-                          values = c("black", "sienna4", "darkorange3", "orange2", "gold1")) +
-        theme_light() + 
-        theme(axis.text.x = element_text(angle = 90, hjust = 1))
+                          values = c("black", "sienna4", "darkorange3", "orange2", "gold1"))
     }
+    # The actual bar plot and its options
+    p + geom_bar(position = "fill", stat = "identity", color="black") +
+      scale_x_discrete("") +
+      scale_y_continuous("Proportion") +
+      theme_light() + 
+      theme(axis.text.x = element_text(angle = 90, hjust = 1))
   })
   
   ## Display the distribution plot
@@ -186,11 +190,13 @@ server <- function(input, output) {
     # Distribution plot for selected variables
     p <- ggplot(data_filt()) 
     
+    # One point per school and per variable
     for (var in input$prop_var) {
       p <- p + geom_point(aes_string(x = var, y = 'Name', colour = shQuote(var)), 
                           size = 3) 
     }
     
+    # Facet by state
     p + facet_grid(State ~ ., scales = "free", space = "free") +
       scale_x_continuous("Proportion", limits = c(0,1)) +
       scale_y_discrete("") +
