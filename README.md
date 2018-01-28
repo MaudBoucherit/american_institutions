@@ -3,6 +3,8 @@ A Shiny app that displays information about American institutions.
 
 Maud Boucherit, Jan 2018   
 
+App: https://maudboucherit.shinyapps.io/american_institutions/
+
 ## Overview
 
 When applying for post-secondary education, one first needs to select some school of interest. But the United States provides plenty universities and colleges. So American students can feel lost. How can they choose among all these choices? To help students make this important decision, I propose building a data visualization app that allows them to compare institutions all over the United States. They can put in relation tuition costs and future earning records. They can find records of past federal financial aid. They can also explore some demographic information about the student body, like the proportion of students by ethnicity, by gender, or even the average entry age.
