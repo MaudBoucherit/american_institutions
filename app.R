@@ -48,7 +48,7 @@ ui <- fluidPage(
         tags$b("Select states:"),
         br(),
         tags$i("You can select only up to three states"),
-        selectizeInput("states", label=NULL, choices=named_states,
+        selectizeInput("states", label=NULL, choices=sort(named_states),
                     multiple = TRUE, options = list(maxItems = 3)),
         
         # Multiple selection for the local area with checkboxes
@@ -80,13 +80,13 @@ ui <- fluidPage(
       # Show a plot of the generated distribution
       mainPanel(
         tabsetPanel(
-          tabPanel("General", 
+          tabPanel("General information", 
             # Display the bar plot
             radioButtons("bar_var", "", c("by ethnic group" = "ethnic", "by family income" = "income"), inline = TRUE),
             
             conditionalPanel(condition = "input.bar_var == 'ethnic'",
                              h3("Proportion of students by ethnic group")),
-            conditionalPanel(condition = "input.var_var == 'income'",
+            conditionalPanel(condition = "input.bar_var == 'income'",
                              h3("Proportion of students by family income")),
            
             plotOutput("barPlot"),
@@ -95,13 +95,13 @@ ui <- fluidPage(
             br(),
             
             # Display the proportion plot
-            checkboxGroupInput("prop_var", "", c("Federal student loan" = "Federal_loan", "Pell Grant" = "Pell_Grant", "Women", "Married", "Dependent"), 
-                               selected = c("Women", "Federal_loan", "Pell_Grant", "Married", "Dependent"), inline = TRUE),
+            checkboxGroupInput("prop_var", "Choose what proportions you'd like to see", c("proportion of students with a federal loan" = "Federal_loan", "proportion of students with a Pell Grant" = "Pell_Grant", "proportion of women in the student body" = "Women", "proportion of married students" = "Married", "proportion of dependent students" = "Dependent"), 
+                               selected = c("Federal_loan", "Pell_Grant", "Dependent"), inline = FALSE),
             
-            h3("Proportion of students for each school"),
+            h3("Description of the student body for each school"),
             plotOutput("distPlot")
           ),
-          tabPanel("Zoom",
+          tabPanel("Zoom on outcomes",
                    # Selection of cities inside selected states
                    uiOutput("schoolControl"),
                    
@@ -120,6 +120,8 @@ server <- function(input, output) {
   
   ## Build an interactive city widget
   output$cityControls <- renderUI({
+    # I filter the cities to only those with schools corresponding 
+    # to the selected criteria
     cities <- data %>% 
       filter(State %in% input$states,
              Locale %in% input$area,
@@ -129,9 +131,7 @@ server <- function(input, output) {
       unique() %>% 
       sort()
     
-    
-    selectizeInput("cities", label=NULL, choices=cities,
-                   selected=cities[1:2], multiple = TRUE)
+    selectizeInput("cities", label=NULL, choices=cities, multiple = TRUE)
   })
   
   ## Filter the data for all the graphs
