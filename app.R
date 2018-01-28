@@ -210,19 +210,25 @@ server <- function(input, output) {
   ## Build an interactive city widget
   output$schoolControl <- renderUI({
     schools <- data_filt() %>% 
+      filter(Mean_earning_6 > 0 | Mean_earning_7 > 0 | 
+             Mean_earning_8 > 0 | Mean_earning_9 > 0 | 
+             Mean_earning_10 > 0) %>% 
       pull(Name) %>% 
       unique() %>% 
       sort()
     
-    selectInput("school", label="Select a school:", choices=schools)
+    selectInput("school", label="Select a school:", choices=schools, 
+                multiple = TRUE, selected = schools[1])
   })
   
   ## Progression plot
   output$progPlot <- renderPlot({
+    # Gather the earnings information in two columns
     data_filt <- data_filt() %>% 
-      filter(Name == input$school) %>% 
+      filter(Name %in% input$school) %>% 
       gather("year", "earnings", Mean_earning_6, Mean_earning_7, 
              Mean_earning_8, Mean_earning_9, Mean_earning_10) %>% 
+      # Rename the year variable 
       mutate(year = str_replace(year, "Mean_earning_6", "6"),
              year = str_replace(year, "Mean_earning_7", "7"),
              year = str_replace(year, "Mean_earning_8", "8"),
@@ -230,11 +236,12 @@ server <- function(input, output) {
              year = str_replace(year, "Mean_earning_10", "10"),
              year = as.numeric(year)) 
     
-    ggplot(data_filt, aes(x = year, y = earnings)) + 
+    # Plot a line per school
+    ggplot(data_filt, aes(x = year, y = earnings, colour = Name)) + 
       geom_point(size = 3) +
       geom_line() +
       scale_x_continuous("Number of years after entry") +
-      scale_y_continuous("Average earnings (USD)") +
+      scale_y_continuous("Average earnings (USD)", limits = c(0,NA)) +
       theme_light()
   })
   
