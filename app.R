@@ -5,7 +5,9 @@
 # This app displays visualizations about Amercian institutions.
 # You can interact with the plots, select features, institutions.
 # 
-# url: 
+# Dependencies: shiny, tidyverse, scales
+#
+# url: https://maudboucherit.shinyapps.io/american_institutions/
 
 # Packages
 library(shiny)
@@ -25,25 +27,50 @@ ui <- fluidPage(
    # Application title
    titlePanel("American Institutions App"),
    
+   "This app displays information about institutions all around the United States for 2016.",
+   br(),
+   "You can first select criteria about the schools. Then you can browse from a tab to the other in the main panel.",
+   
+   
    # Sidebar with a slider input for number of bins 
    sidebarLayout(
       sidebarPanel(
         h3("Filter institutions:"),
         
-        selectizeInput("states", label="Select states:", choices=named_states,
-                    selected = c('IN', 'IL'), multiple = TRUE),
+        # Some instructions for the user
+        tags$i("After selecting criteria about the schools, click on the "),
+        code("Apply"),
+        tags$i(" button to display the plots."),
+        br(),
+        br(),
         
+        # Multiple selection for the states with a dropdown menu
+        tags$b("Select states:"),
+        br(),
+        tags$i("You can select only up to three states"),
+        selectizeInput("states", label=NULL, choices=named_states,
+                    multiple = TRUE, options = list(maxItems = 3)),
+        
+        # Multiple selection for the local area with checkboxes
         checkboxGroupInput("area", "Select a neighbourhood:", c('City', 'Suburb', 'Town', 'Rural'), 
                            selected = c("City"), inline = TRUE),
         
+        # A slider to select the range of cost of attendance
         sliderInput("fees", "Annual cost of attendance:",
                     min = 0, max = 100000,
                     value = c(min(data$Cost_att, na.rm = TRUE), 30000), pre = "$"),
         
-        checkboxGroupInput("control", "Select school status:", unique(data$Control), 
+        # Multiple selection for the school status with checkboxes
+        tags$b("Select school status:"), 
+        br(),
+        tags$i("You should select at least one"),
+        checkboxGroupInput("control", label=NULL, unique(data$Control), 
                            selected = c("Public"), inline = TRUE),
         
-        # Selection of cities inside selected states
+        # Selection of cities that have schools corresponding to the previous selection
+        tags$b("Select cities:"), 
+        br(),
+        tags$i("The cities must be selected after the other criteria"),
         uiOutput("cityControls"),
         
         # The go button to filter everything at once
@@ -103,7 +130,7 @@ server <- function(input, output) {
       sort()
     
     
-    selectizeInput("cities", label="Select cities:", choices=cities,
+    selectizeInput("cities", label=NULL, choices=cities,
                    selected=cities[1:2], multiple = TRUE)
   })
   
