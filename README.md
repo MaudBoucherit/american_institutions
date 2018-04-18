@@ -7,11 +7,11 @@ American Institutions App
 <br>
 </h1>
 
-<h5 align="center"><a>
+<h4 align="center"><a>
 Created by Maud Boucherit
 
 January 2018
-</a></h5>
+</a></h4>
 
 <h4 align="center"><a>
 
@@ -29,7 +29,7 @@ App: https://maudboucherit.shinyapps.io/american_institutions/
 
 When applying for post-secondary education, one first needs to select some school of interest. But the United States provides plenty universities and colleges. So American students can feel lost. How can they choose among all these choices? To help students make this important decision, I propose building a data visualization app that allows them to compare institutions all over the United States. They can put in relation tuition costs and future earning records. They can find records of past federal financial aid. They can also explore some demographic information about the student body, like the proportion of students by ethnicity, by gender, or even the average entry age.
 
-### Data
+## Data
 
 I am using the [scorecard](data/scorecard.csv) dataset.   
 More information about this dataset is available [here](data/README.md).
