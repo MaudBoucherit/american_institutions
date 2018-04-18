@@ -1,11 +1,10 @@
 <h1 align="center">
   <br>
-
-![](figures/america.jpg)
-
 American Institutions App
 <br>
 </h1>
+
+![](figures/america.jpg)
 
 <h4 align="center"><a>
 Created by Maud Boucherit
