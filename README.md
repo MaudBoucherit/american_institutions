@@ -1,7 +1,27 @@
-# American Institutions App
-A Shiny app that displays information about American institutions.
+<h1 align="center">
+  <br>
 
-Maud Boucherit, Jan 2018   
+![](figures/america.gif)
+
+American Institutions App
+<br>
+</h1>
+
+<h5 align="center"><a>
+Created by Maud Boucherit
+
+January 2018
+</a></h5>
+
+<h4 align="center"><a>
+
+[![R Version](https://img.shields.io/badge/R%20Version-%3E%3D%203.4-blue.svg)](https://cran.r-project.org/) 
+[![License](https://img.shields.io/badge/License-MIT-orange.svg)](LICENSE.md) 
+
+</a></h4>
+
+
+A Shiny app that displays information about American institutions.
 
 App: https://maudboucherit.shinyapps.io/american_institutions/
 
