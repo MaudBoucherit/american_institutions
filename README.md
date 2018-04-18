@@ -1,7 +1,7 @@
 <h1 align="center">
   <br>
 
-![](figures/america.gif)
+![](figures/america.jpg)
 
 American Institutions App
 <br>
